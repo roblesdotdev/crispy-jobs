@@ -8,3 +8,8 @@ node_modules
 tsconfig.tsbuildinfo
 
 *.ignore.md
+
+/prisma/**/*.db-journal
+/prisma/**/*.db
+/prisma/**/*.sqlite
+
