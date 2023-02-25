@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Jobs {
+model Job {
   id        String  @id @default(cuid())
   title     String
   location  String

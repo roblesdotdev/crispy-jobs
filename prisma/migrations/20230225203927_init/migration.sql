@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "Jobs" (
+CREATE TABLE "Job" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "title" TEXT NOT NULL,
     "location" TEXT NOT NULL,
