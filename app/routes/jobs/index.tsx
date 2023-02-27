@@ -5,5 +5,5 @@ export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url)
   const query = url.searchParams.get('query')
 
-  return redirect(`/search?query=${query}`)
+  return redirect(`/search${query ? `?query=${query}` : ''}`)
 }
