@@ -84,7 +84,7 @@ export function JobCombobox({
                 !selectedJob &&
                 cb.highlightedIndex < 0
               ) {
-                navigate(`/search?query=${query}`)
+                navigate(`/search${query.length > 0 ? `?query=${query}` : ''}`)
               }
             },
           })}
