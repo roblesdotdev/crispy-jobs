@@ -1,9 +1,12 @@
-import { Link } from '@remix-run/react'
+import { Form } from '@remix-run/react'
+import { JobCombobox } from './resources/jobs'
 
 export default function Index() {
   return (
-    <div className="flex min-h-screen items-center justify-center text-xl">
-      <Link to="/search">Search</Link>
-    </div>
+    <Form>
+      <div className="flex items-center justify-center pt-32">
+        <JobCombobox />
+      </div>
+    </Form>
   )
 }

@@ -14,3 +14,19 @@ export async function getListing(): Promise<
     },
   })
 }
+
+export async function searchJobs(query: string) {
+  await new Promise(res => setTimeout(res, Math.random() * 1000))
+  return db.job.findMany({
+    where: {
+      title: {
+        contains: query,
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+    },
+    take: 10,
+  })
+}
