@@ -21,14 +21,20 @@ export async function loader({ request }: LoaderArgs) {
   )
 }
 
-export function JobCombobox({ error }: { error?: string | null }) {
+export function JobCombobox({
+  error,
+  query: q,
+}: {
+  error?: string | null
+  query?: string | null
+}) {
   const jobsFetcher = useFetcher<typeof loader>()
   const navigate = useNavigate()
   const id = useId()
   const jobs = jobsFetcher.data?.items ?? []
   type Job = (typeof jobs)[number]
   const [selectedJob, setSelectedJob] = useState<Job | null | undefined>(null)
-  const [query, setQuery] = useState<string>('')
+  const [query, setQuery] = useState<string>(q ?? '')
 
   const cb = useCombobox<Job>({
     id,
@@ -63,6 +69,7 @@ export function JobCombobox({ error }: { error?: string | null }) {
       <div {...cb.getMenuProps({ className: 'relative' })}>
         <input
           {...cb.getInputProps({
+            value: query,
             className: clsx('w-full border border-gray-500 px-2 py-1 text-lg', {
               'rounded-t rounded-b-0': displayMenu,
               rounded: !displayMenu,

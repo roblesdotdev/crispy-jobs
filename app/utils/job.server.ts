@@ -41,3 +41,16 @@ export async function getJobById(id: Job['id']) {
     where: { AND: [{ id }, { published: true }] },
   })
 }
+
+export async function searchDeepJobs(query: string) {
+  return db.job.findMany({
+    where: {
+      published: true,
+      OR: [{ title: { contains: query } }, { body: { contains: query } }],
+    },
+    select: {
+      id: true,
+      title: true,
+    },
+  })
+}
