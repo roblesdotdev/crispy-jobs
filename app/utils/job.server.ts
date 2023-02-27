@@ -19,14 +19,25 @@ export async function searchJobs(query: string) {
   await new Promise(res => setTimeout(res, Math.random() * 1000))
   return db.job.findMany({
     where: {
-      title: {
-        contains: query,
-      },
+      AND: [
+        {
+          title: {
+            contains: query,
+          },
+        },
+        { published: true },
+      ],
     },
     select: {
       id: true,
       title: true,
     },
     take: 10,
+  })
+}
+
+export async function getJobById(id: Job['id']) {
+  return db.job.findFirst({
+    where: { AND: [{ id }, { published: true }] },
   })
 }

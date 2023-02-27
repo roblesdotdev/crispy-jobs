@@ -72,7 +72,11 @@ export function JobCombobox({ error }: { error?: string | null }) {
             placeholder: 'Search your next job...',
             name: 'query',
             onKeyDown(e) {
-              if (e.key === 'Enter' && !selectedJob && !displayMenu) {
+              if (
+                e.key === 'Enter' &&
+                !selectedJob &&
+                cb.highlightedIndex < 0
+              ) {
                 navigate(`/search?query=${query}`)
               }
             },
