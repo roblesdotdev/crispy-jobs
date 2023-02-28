@@ -2,31 +2,26 @@ import type { LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { Form, useLoaderData, useSearchParams } from '@remix-run/react'
 import ListingCard from '~/components/listing-card'
-import { getListing, searchDeepJobs } from '~/utils/job.server'
+import Pagination from '~/components/pagination'
+import { searchDeepJobs } from '~/utils/job.server'
 import { JobCombobox } from './resources/jobs'
 
+const JOBS_PEER_PAGE = 15
+
 type LoaderData = {
-  items: NonNullable<Awaited<ReturnType<typeof getListing>>>
+  data: NonNullable<Awaited<ReturnType<typeof searchDeepJobs>>>
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
   const searchParams = new URL(request.url).searchParams
   const query = searchParams.get('query')
+  const page = searchParams.get('page')
 
   const headers = { 'Cache-Control': 'max-age=60' }
 
-  if (!query || query.length === 0) {
-    return json<LoaderData>(
-      {
-        items: await getListing(),
-      },
-      { headers },
-    )
-  }
-
   return json<LoaderData>(
     {
-      items: await searchDeepJobs(query),
+      data: await searchDeepJobs({ query, skip: Number(page) }),
     },
     { headers },
   )
@@ -35,12 +30,15 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Search() {
   const [searchParams] = useSearchParams()
   const query = searchParams.get('query') ?? ''
-  const { items } = useLoaderData<LoaderData>()
+  const {
+    data: [totalJobs, items],
+  } = useLoaderData<LoaderData>()
+  const totalPages = Math.ceil(totalJobs / JOBS_PEER_PAGE)
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-12 text-xl">
+    <div className="flex min-h-screen flex-col items-center  py-12 text-xl">
       <h1>Searching {searchParams.get('query') ?? 'with no query'}</h1>
-      <h2>{items.length} items found</h2>
+      <h2>{totalJobs} items found</h2>
       <Form>
         <JobCombobox query={query} />
       </Form>
@@ -54,6 +52,9 @@ export default function Search() {
             team={item.team}
           />
         ))}
+      </div>
+      <div className="mx-auto w-full max-w-3xl py-6">
+        <Pagination totalPages={totalPages} pageParam="page" />
       </div>
     </div>
   )
