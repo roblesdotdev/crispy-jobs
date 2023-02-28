@@ -7,17 +7,13 @@ export function createJob(): Pick<
 > {
   const title = faker.name.jobTitle()
   const body = `
----
-title: ${title}
----
-
 ## Section 1
 
 ${faker.lorem.paragraph()}
 
 ## Section 2
 
-${faker.lorem.paragraph()}
+${faker.lorem.paragraphs()}
 `
   return {
     title,
