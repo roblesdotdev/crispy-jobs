@@ -66,14 +66,18 @@ export function JobCombobox({
           </em>
         ) : null}
       </div>
-      <div {...cb.getMenuProps({ className: 'relative' })}>
+      <div
+        {...cb.getMenuProps({ id: 'menu-lb', className: 'relative', role: '' })}
+      >
         <input
           {...cb.getInputProps({
+            id: 'input-search',
             value: query,
             className: clsx('w-full border border-gray-500 px-2 py-1 text-lg', {
               'rounded-t rounded-b-0': displayMenu,
               rounded: !displayMenu,
             }),
+            'aria-label': 'input search',
             'aria-invalid': Boolean(error) || undefined,
             'aria-errormessage': error ? 'job-error' : undefined,
             placeholder: 'Search your next job...',
