@@ -51,6 +51,8 @@ export async function searchDeepJobs(query: string) {
     select: {
       id: true,
       title: true,
+      location: true,
+      team: true,
     },
   })
 }
