@@ -11,7 +11,7 @@ async function seed() {
   await prisma.job.deleteMany({ where: {} })
   console.timeEnd('🧹 Cleaned up the database...')
 
-  const totalJobs = 30
+  const totalJobs = 35
   console.time(`👤 Created ${totalJobs} jobs...`)
   await Promise.all(
     Array.from({ length: totalJobs }, async () => {

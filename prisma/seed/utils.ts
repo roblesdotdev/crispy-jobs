@@ -13,7 +13,13 @@ ${faker.lorem.paragraph()}
 
 ## Section 2
 
-${faker.lorem.paragraphs()}
+${faker.lorem.paragraphs(3, '\n\n\n')}
+
+## Section 3
+
+- ${faker.lorem.sentence()}
+- ${faker.lorem.sentence()}
+- ${faker.lorem.sentence()}
 `
   return {
     title,
