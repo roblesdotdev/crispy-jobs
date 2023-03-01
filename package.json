@@ -4,8 +4,6 @@
   "scripts": {
     "prepare": "husky install || true",
     "build": "remix build",
-    "dev:mocks": "tsx --require ./mocks",
-    "dev:remix": "remix dev",
     "dev": "binode --require ./mocks -- @remix-run/dev:remix dev",
     "start": "remix-serve build",
     "typecheck": "tsc -b",
