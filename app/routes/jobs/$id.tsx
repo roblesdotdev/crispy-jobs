@@ -1,10 +1,15 @@
-import type { LoaderFunction } from '@remix-run/node'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import { json } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
-import invariant from 'tiny-invariant'
-import { MapPinIcon, UserGroupIcon } from '~/components/icons'
-import { getJobById } from '~/utils/job.server'
+import { Form, useActionData, useLoaderData } from '@remix-run/react'
 import { marked } from 'marked'
+import invariant from 'tiny-invariant'
+import { ErrorLabel, Input, InputLabel } from '~/components/forms'
+import { MapPinIcon, UserGroupIcon } from '~/components/icons'
+import type { SchemaErrors } from '~/utils/forms'
+import { validateSchema } from '~/utils/forms'
+import { getJobById } from '~/utils/job.server'
+import type { ApplySchemaInput } from '~/utils/validation'
+import { applySchema } from '~/utils/validation'
 
 type LoaderData = {
   job: NonNullable<Awaited<ReturnType<typeof getJobById>>>
@@ -36,8 +41,31 @@ export const loader: LoaderFunction = async ({ params }) => {
   )
 }
 
+type ActionData = {
+  status: 'success' | 'error'
+  errors?: SchemaErrors<ApplySchemaInput> | null
+}
+
+export const action: ActionFunction = async ({ request }) => {
+  const { formData, errors } = await validateSchema<ApplySchemaInput>({
+    request,
+    schema: applySchema,
+  })
+
+  if (errors) {
+    return json<ActionData>({ status: 'error', errors }, { status: 400 })
+  }
+
+  /* TODO: send email with form data */
+  console.log(formData)
+
+  return json<ActionData>({ status: 'success' })
+}
+
 export default function Job() {
   const { job, html } = useLoaderData<LoaderData>()
+  const data = useActionData<ActionData>()
+  const errors = data?.errors
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 py-32 px-6 text-xl">
@@ -59,6 +87,63 @@ export default function Job() {
           className="prose max-w-none"
           dangerouslySetInnerHTML={{ __html: html }}
         />
+      </div>
+      <div className="py-6">
+        <h1 className="mb-4 text-2xl font-bold">Apply Now</h1>
+        <Form method="post" noValidate>
+          <div className="flex flex-col">
+            <InputLabel htmlFor="firstName" text="First Name" />
+            <Input
+              name="firstName"
+              placeholder="John"
+              errorId="fn-error"
+              invalid={Boolean(errors?.firstName)}
+            />
+            <ErrorLabel id="fn-error" error={errors?.firstName} />
+          </div>
+          <div className="flex flex-col">
+            <InputLabel htmlFor="lastName" text="Last Name" />
+            <Input
+              name="lastName"
+              placeholder="Doe"
+              errorId="ln-error"
+              invalid={Boolean(errors?.lastName)}
+            />
+            <ErrorLabel id="ln-error" error={errors?.lastName} />
+          </div>
+          <div className="flex flex-col">
+            <InputLabel htmlFor="email" text="Eamil" />
+            <Input
+              type="email"
+              name="email"
+              placeholder="example@email.com"
+              errorId="email-error"
+              invalid={Boolean(errors?.email)}
+            />
+            <ErrorLabel id="email-error" error={errors?.email} />
+          </div>
+          <div className="flex flex-col">
+            <InputLabel htmlFor="phone" text="Phone" />
+            <Input
+              name="phone"
+              placeholder="444 44 444"
+              errorId="phone-error"
+              invalid={Boolean(errors?.phone)}
+            />
+            <ErrorLabel id="phone-error" error={errors?.phone} />
+          </div>
+
+          <div className="py-4">
+            <button type="submit" className="bg-black px-6 py-3 text-white">
+              Submit Application
+            </button>
+          </div>
+        </Form>
+        <p className="text-sm">
+          By voluntarily providing information and clicking "Submit
+          Application", you explicitly consent to the use of information for the
+          purposes described in our Privacy statement.
+        </p>
       </div>
     </div>
   )
