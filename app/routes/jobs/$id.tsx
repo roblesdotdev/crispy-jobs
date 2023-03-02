@@ -5,6 +5,7 @@ import { marked } from 'marked'
 import invariant from 'tiny-invariant'
 import { ErrorLabel, Input, InputLabel } from '~/components/forms'
 import { MapPinIcon, UserGroupIcon } from '~/components/icons'
+import { sendEmail } from '~/utils/email.server'
 import type { SchemaErrors } from '~/utils/forms'
 import { validateSchema } from '~/utils/forms'
 import { getJobById } from '~/utils/job.server'
@@ -43,7 +44,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 type ActionData = {
   status: 'success' | 'error'
-  errors?: SchemaErrors<ApplySchemaInput> | null
+  errors?: (SchemaErrors<ApplySchemaInput> & { form?: string | null }) | null
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -56,10 +57,21 @@ export const action: ActionFunction = async ({ request }) => {
     return json<ActionData>({ status: 'error', errors }, { status: 400 })
   }
 
-  /* TODO: send email with form data */
-  console.log(formData)
+  const res = await sendEmail({
+    to: 'to@email.com',
+    subject: 'test email',
+    from: formData.email,
+    text: JSON.stringify(formData),
+  })
 
-  return json<ActionData>({ status: 'success' })
+  if (res.ok) {
+    return json<ActionData>({ status: 'success' })
+  }
+
+  return json<ActionData>(
+    { status: 'error', errors: { form: 'Something went wrong' } },
+    { status: 400 },
+  )
 }
 
 export default function Job() {
