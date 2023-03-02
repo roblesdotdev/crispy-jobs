@@ -3,19 +3,21 @@ import { getRequiredServerEnvVar } from './misc'
 const MAILGUN_SENDING_KEY = getRequiredServerEnvVar('MAILGUN_SENDING_KEY')
 const MAILGUN_DOMAIN = getRequiredServerEnvVar('MAILGUN_DOMAIN')
 
+type MailgunMessage = {
+  to: string
+  from: string
+  subject: string
+  text: string
+  html?: string | null
+}
+
 export async function sendEmail({
   to,
   from = 'example@email.com',
   subject,
   text,
   html,
-}: {
-  to: string
-  from?: string
-  subject: string
-  text: string
-  html?: string
-}) {
+}: MailgunMessage) {
   const auth = `${Buffer.from(`api:${MAILGUN_SENDING_KEY}`).toString('base64')}`
 
   if (!html) html = text
