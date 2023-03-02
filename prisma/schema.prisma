@@ -10,8 +10,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Company {
+  id          String  @id @default(cuid())
+  name        String
+  email       String
+  address     String?
+  description String?
+
+  jobs Job[]
+}
+
 model Job {
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  companyId String
+
   id        String  @id @default(cuid())
+  code      String
   title     String
   location  String
   team      String
