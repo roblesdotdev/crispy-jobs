@@ -58,9 +58,9 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const res = await sendEmail({
-    to: 'to@email.com',
-    subject: 'test email',
-    from: formData.email,
+    to: 'company@email.com',
+    subject: '#job-code #job-title',
+    from: 'Crispy Jobs Email Service <crispy-jobs@contact.com>',
     text: JSON.stringify(formData),
   })
 
@@ -82,6 +82,7 @@ export default function Job() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6 py-32 px-6 text-xl">
       <div className="flex flex-col">
+        <span>{job.company.name}</span>
         <h1 className="text-3xl font-bold">{job.title}</h1>
         <ul className="mt-2 flex flex-col gap-2 text-sm font-bold">
           <li className="flex items-center gap-2">

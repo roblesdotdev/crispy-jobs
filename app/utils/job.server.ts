@@ -1,4 +1,3 @@
-import type { Prisma } from '@prisma/client'
 import type { Job } from '~/types'
 import { db } from './db.server'
 
@@ -28,6 +27,9 @@ export async function searchJobs(query: string) {
 export async function getJobById(id: Job['id']) {
   return db.job.findFirst({
     where: { AND: [{ id }, { published: true }] },
+    include: {
+      company: { select: { id: true, name: true } },
+    },
   })
 }
 
@@ -48,17 +50,19 @@ export async function searchDeepJobs({
     }),
   }
 
-  const options: Prisma.JobFindManyArgs = {
-    take: JOBS_PEER_PAGE,
-    skip: (validSkip - 1) * JOBS_PEER_PAGE,
-    where,
-    select: {
-      id: true,
-      title: true,
-      location: true,
-      team: true,
-    },
-  }
-
-  return db.$transaction([db.job.count({ where }), db.job.findMany(options)])
+  return db.$transaction([
+    db.job.count({ where }),
+    db.job.findMany({
+      take: JOBS_PEER_PAGE,
+      skip: (validSkip - 1) * JOBS_PEER_PAGE,
+      where,
+      select: {
+        id: true,
+        title: true,
+        location: true,
+        team: true,
+        company: { select: { id: true, name: true } },
+      },
+    }),
+  ])
 }

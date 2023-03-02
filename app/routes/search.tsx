@@ -8,8 +8,11 @@ import { JobCombobox } from './resources/jobs'
 
 const JOBS_PEER_PAGE = 15
 
+type SearchResponse = NonNullable<Awaited<ReturnType<typeof searchDeepJobs>>>
+
 type LoaderData = {
-  data: NonNullable<Awaited<ReturnType<typeof searchDeepJobs>>>
+  totalJobs: SearchResponse[0]
+  items: SearchResponse[1]
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -18,21 +21,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   const page = searchParams.get('page')
 
   const headers = { 'Cache-Control': 'max-age=60' }
+  const [totalJobs, items] = await searchDeepJobs({ query, skip: Number(page) })
 
-  return json<LoaderData>(
-    {
-      data: await searchDeepJobs({ query, skip: Number(page) }),
-    },
-    { headers },
-  )
+  return json<LoaderData>({ totalJobs, items }, { headers })
 }
 
 export default function Search() {
   const [searchParams] = useSearchParams()
   const query = searchParams.get('query') ?? ''
-  const {
-    data: [totalJobs, items],
-  } = useLoaderData<LoaderData>()
+  const { totalJobs, items } = useLoaderData<LoaderData>()
   const totalPages = Math.ceil(totalJobs / JOBS_PEER_PAGE)
 
   return (
@@ -50,6 +47,7 @@ export default function Search() {
             title={item.title}
             location={item.location}
             team={item.team}
+            company={item.company.name}
           />
         ))}
       </div>

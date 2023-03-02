@@ -7,9 +7,11 @@ export default function ListingCard({
   title,
   location,
   team,
-}: Pick<Job, 'id' | 'title' | 'location' | 'team'>) {
+  company,
+}: Pick<Job, 'id' | 'title' | 'location' | 'team'> & { company: string }) {
   return (
     <div className="flex w-full flex-1 flex-col px-3 py-6">
+      <h3 className="text-sm font-bold">{company}</h3>
       <Link to={`/jobs/${id}`}>
         <h1 className="text-xl text-red-600 hover:text-red-500">{title}</h1>
       </Link>

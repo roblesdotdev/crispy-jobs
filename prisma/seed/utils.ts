@@ -1,11 +1,21 @@
 import { faker } from '@faker-js/faker'
-import type { Job } from '~/types'
+import type { Job, Company } from '~/types'
+
+export function createCompany(): Omit<Company, 'id'> {
+  return {
+    name: faker.company.name(),
+    address: faker.address.streetAddress(),
+    description: faker.company.catchPhrase(),
+    email: faker.internet.email(),
+  }
+}
 
 export function createJob(): Pick<
   Job,
-  'title' | 'location' | 'team' | 'body' | 'bannerUrl'
+  'title' | 'code' | 'location' | 'team' | 'body' | 'bannerUrl'
 > {
   const title = faker.name.jobTitle()
+  const code = faker.random.alpha(6).toUpperCase()
   const body = `
 ## Section 1
 
@@ -23,6 +33,7 @@ ${faker.lorem.paragraphs(3, '\n\n\n')}
 `
   return {
     title,
+    code,
     location: faker.address.cityName(),
     team: faker.name.jobArea(),
     body: body,
